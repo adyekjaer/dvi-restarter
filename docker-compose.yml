@@ -1,0 +1,32 @@
+services:
+  dvi-watchdog:
+    build: .
+    image: dvi-watchdog:latest
+    restart: unless-stopped
+    # A power cycle can take ~30 min worst case (slow portal + retries); give it time to turn the pump
+    # back on before Docker kills the container.
+    stop_grace_period: 35m
+    environment:
+      # Required - taken from your shell or a .env file next to this file.
+      DVI_USER: ${DVI_USER:?set DVI_USER}
+      DVI_PASS: ${DVI_PASS:?set DVI_PASS}
+      DVI_FABNR: ${DVI_FABNR:?set DVI_FABNR}
+      # Optional - defaults shown.
+      CHECK_INTERVAL: ${CHECK_INTERVAL:-300}
+      CONFIRM_TIMEOUT: ${CONFIRM_TIMEOUT:-120}
+      COMMAND_ATTEMPTS: ${COMMAND_ATTEMPTS:-3}
+      OFF_HOLD: ${OFF_HOLD:-60}
+      RESTART_GRACE: ${RESTART_GRACE:-600}
+      MAX_DATA_AGE: ${MAX_DATA_AGE:-120}
+      MAX_RESTARTS: ${MAX_RESTARTS:-3}
+      RESTART_WINDOW: ${RESTART_WINDOW:-3600}
+      BACKOFF: ${BACKOFF:-3600}
+      HEALTHY_ERROR_VALUES: ${HEALTHY_ERROR_VALUES:-0}
+      DRY_RUN: ${DRY_RUN:-0}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      TZ: ${TZ:-Europe/Copenhagen}
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"

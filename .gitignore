@@ -1,0 +1,10 @@
+# Credentials
+.env
+
+# Captures that contain credentials / personal data
+*.har
+api_*.json
+
+# Python
+__pycache__/
+*.pyc
