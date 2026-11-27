@@ -34,7 +34,7 @@ There is no test suite or linter. Logic has been verified by importing `dvi_watc
 - Login: form fields `user`, `pass`, `sublogin=1` → 302 to `main.php`.
 - State: `subupdatemainbuttons=1` returns HTML containing `turnPumpOnOff(N)`. The button offers the *opposite* state: `4` ⇒ pump is ON, `2` ⇒ pump is OFF.
 - Command: `subusersetting=1&setting=onoff&value=4` (off) / `value=2` (on); body `1` = accepted.
-- The command request blocks until the pump acknowledges (observed 15 s off, 58 s on), hence `COMMAND_TIMEOUT = 180`. A read timeout is treated as "unknown, verify via `wait_for_state()`", not as failure – the command usually took effect.
+- The command request blocks until the pump acknowledges (observed 5–57 s off, ~53–60 s on), hence `COMMAND_TIMEOUT = 180`. The portal gives up after ~60 s and answers `0`. Both a read timeout and a `0` are treated as "unknown, verify via `wait_for_state()`", not as failure – the command usually still takes effect.
 
 ## Watchdog check order (deliberate, keep it)
 

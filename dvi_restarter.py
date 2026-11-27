@@ -116,8 +116,9 @@ class DVIPortal:
     def set_power(self, on, timeout=COMMAND_TIMEOUT):
         """Send the on/off command.
 
-        A read timeout is not treated as failure: the command has usually
-        reached the pump already, so callers must verify with wait_for_state().
+        A read timeout or a '0' answer (portal stopped waiting for the pump
+        after ~60 s) is not treated as failure: the command has usually reached
+        the pump already, so callers must verify with wait_for_state().
         """
         value = VALUE_ON if on else VALUE_OFF
         word = 'on' if on else 'off'
@@ -134,6 +135,12 @@ class DVIPortal:
             return
         log.info('Portal answered %s command with %r after %.1fs',
                  word, result, time.monotonic() - started)
+        if result == '0':
+            # The portal gives up waiting for the pump after ~60 s and answers
+            # '0', but the command is usually still on its way to the pump.
+            log.warning('Portal answered %r (pump did not acknowledge in time); '
+                        'verifying state instead', result)
+            return
         if result != '1':
             raise DVIPortalError(
                 f'Portal rejected {"on" if on else "off"} command (response {result!r})')
